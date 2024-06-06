@@ -10,8 +10,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Clona el repositorio
-                git 'https://github.com/K-PM/primerCiCd.git'
+                // Clona el repositorio desde GitHub
+                git branch: 'main', url: 'https://github.com/K-PM/primerCiCd.git'
             }
         }
         
