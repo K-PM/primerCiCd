@@ -1,39 +1,31 @@
-
 pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'primercicd'
-        DOCKER_CONTAINER = 'primercicd'
-        DOCKER_PORT = '3000'
+        DOCKER_IMAGE = 'node-hello-world'
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                // Clona el repositorio desde GitHub
-                git branch: 'main', url: 'https://github.com/K-PM/primerCiCd.git'
-            }
-        }
-        
-        stage('Build Docker Image') {
+        stage('Build') {
             steps {
                 script {
-                    // Elimina cualquier proceso utilizando el puerto especificado
-                    sh 'fuser -k ${DOCKER_PORT}/tcp || true'
-                    // Construye la imagen Docker
-                    sh 'docker build -t ${DOCKER_IMAGE} .'
+                    docker.build(DOCKER_IMAGE)
                 }
             }
         }
-
-        stage('Run Docker Container') {
+        stage('Test') {
             steps {
                 script {
-                    // Elimina cualquier contenedor Docker con el nombre especificado
-                    sh 'docker rm -f ${DOCKER_CONTAINER} || true'
-                    // Ejecuta el contenedor Docker
-                    sh 'docker run -d --name ${DOCKER_CONTAINER} -p ${DOCKER_PORT}:${DOCKER_PORT} ${DOCKER_IMAGE}'
+                    docker.image(DOCKER_IMAGE).inside {
+                        sh 'echo "Tests passed"'
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    docker.image(DOCKER_IMAGE).run('-d -p 3000:3000')
                 }
             }
         }

@@ -1,15 +1,9 @@
-const request = require('supertest');
-const express = require('express');
-const app = express();
-
-app.get('/', (req, res) => {
-    res.status(200).send('dentro PRIMERO!');
-});
+import request from 'supertest';
+import app from './index'; // Asegúrate de exportar tu app en index.js
 
 describe('GET /', () => {
-    it('dentro SEGUNDO!', (done) => {
-        request(app)
-            .get('/')
-            .expect(200, 'dentro PRIMERO!', done);
-    });
+  it('responds with 200', async () => {
+    const response = await request(app).get('/');
+    expect(response.statusCode).toBe(200);
+  });
 });
